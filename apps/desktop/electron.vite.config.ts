@@ -17,6 +17,9 @@ import {
 	htmlEnvTransformPlugin,
 } from "./vite/helpers";
 
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
 // override: true ensures .env values take precedence over inherited env vars
 config({ path: resolve(__dirname, "../../.env"), override: true, quiet: true });
 
@@ -118,7 +121,11 @@ export default defineConfig({
 				output: {
 					dir: resolve(devPath, "main"),
 				},
-				external: ["electron", ...mainExternalizedDependencies],
+				external: [
+					"electron",
+					...mainExternalizedDependencies,
+					...mainExternalizedDependencies.map((dep) => new RegExp(`^${dep}(/.*)?$`)),
+				],
 				plugins: [sentryPlugin].filter(Boolean),
 			},
 		},
@@ -242,6 +249,18 @@ export default defineConfig({
 			reactPlugin(),
 			htmlEnvTransformPlugin(),
 		],
+
+		resolve: {
+			alias: [
+				{ find: "@", replacement: resolve("src/renderer") },
+				{ find: "highlight.js/lib/languages/c-like", replacement: "highlight.js/lib/languages/c" },
+				{ find: "highlight.js/lib/languages/htmlbars", replacement: "highlight.js/lib/languages/xml" },
+				{ find: "highlight.js/lib/languages/sql_more", replacement: "highlight.js/lib/languages/sql" },
+				{ find: "lowlight-actual", replacement: require.resolve("lowlight") },
+				{ find: "lowlight/lib/core", replacement: resolve("src/renderer/lowlight-stub.js") },
+				{ find: /^lowlight$/, replacement: resolve("src/renderer/lowlight-stub.js") }
+			],
+		},
 
 		worker: {
 			format: "es",

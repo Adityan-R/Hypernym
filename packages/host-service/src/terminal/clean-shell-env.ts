@@ -129,7 +129,16 @@ function spawnCleanShellEnv(): Promise<Record<string, string>> {
 		} else {
 			env.SHELL = shell;
 		}
-		const command = `echo -n "${DELIMITER}"; command env; echo -n "${DELIMITER}"; exit`;
+		let command: string;
+		let args: string[];
+
+		if (process.platform === "win32") {
+			command = `Write-Host -NoNewline "${DELIMITER}"; Get-ChildItem Env: | ForEach-Object { "$($_.Name)=$($_.Value)" }; Write-Host -NoNewline "${DELIMITER}"; exit`;
+			args = ["-NoProfile", "-NonInteractive", "-Command", command];
+		} else {
+			command = `echo -n "${DELIMITER}"; command env; echo -n "${DELIMITER}"; exit`;
+			args = ["-i", "-l", "-c", command];
+		}
 
 		// Anchor at $HOME so the snapshot shell doesn't inherit a cwd
 		// host-service has no control over. Tools called from interactive
@@ -140,7 +149,7 @@ function spawnCleanShellEnv(): Promise<Record<string, string>> {
 
 		let child: ChildProcess;
 		try {
-			child = spawn(shell, ["-i", "-l", "-c", command], {
+			child = spawn(shell, args, {
 				detached: true,
 				stdio: ["ignore", "pipe", "pipe"],
 				env,

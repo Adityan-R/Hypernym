@@ -52,7 +52,7 @@ export function resolveConfiguredShell(
 	const platform = options.platform ?? process.platform;
 
 	if (platform === "win32") {
-		return normalizeShellPath(env.COMSPEC) ?? "cmd.exe";
+		return normalizeShellPath(env.SHELL) ?? "powershell.exe";
 	}
 
 	const accountShell =

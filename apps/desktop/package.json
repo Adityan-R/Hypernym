@@ -244,7 +244,7 @@
 		"zustand": "5.0.12"
 	},
 	"devDependencies": {
-		"@sentry/vite-plugin": "4.9.1",
+		"@sentry/vite-plugin": "^5.1.0",
 		"@superset/typescript": "workspace:*",
 		"@tailwindcss/vite": "4.2.2",
 		"@tanstack/router-cli": "1.167.17",

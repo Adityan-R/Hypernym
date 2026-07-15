@@ -112,6 +112,11 @@ export const mainExternalizedDependencies = [
 	// can't resolve at bundle time. Externalizing lets Node handle the require at
 	// runtime from node_modules. Also keeps the bundle size sane (~20 MB chunk).
 	"mastracode",
+	"@mastra/core",
+	"shell-env",
+	"execa",
+	"posthog-node",
+	"@sentry/electron",
 ];
 
 export const packagedNodeModuleCopies = [
