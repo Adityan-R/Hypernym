@@ -48,7 +48,7 @@
 		"@rn-primitives/toggle": "1.4.0",
 		"@rn-primitives/toggle-group": "1.4.0",
 		"@rn-primitives/tooltip": "1.4.0",
-		"@shikijs/core": "4.2.0",
+		"@shikijs/core": "4.3.1",
 		"@shikijs/langs": "4.2.0",
 		"@shikijs/themes": "4.2.0",
 		"@superset/auth": "workspace:*",
