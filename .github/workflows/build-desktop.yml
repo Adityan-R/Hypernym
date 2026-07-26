@@ -32,7 +32,6 @@ jobs:
   build-macos:
     name: Build - macOS (${{ matrix.arch }})
     runs-on: macos-latest
-    environment: production
 
     strategy:
       fail-fast: false
@@ -182,7 +181,6 @@ jobs:
   build-linux:
     name: Build - Linux (x64)
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
       - name: Checkout code

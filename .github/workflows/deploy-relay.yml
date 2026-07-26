@@ -40,4 +40,9 @@ jobs:
       - name: Deploy relay (scale + rolling deploy + smoke test)
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: apps/relay/scripts/deploy.sh
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "Skipping Relay deployment to Fly (FLY_API_TOKEN secret not set)"
+            exit 0
+          fi
+          apps/relay/scripts/deploy.sh
