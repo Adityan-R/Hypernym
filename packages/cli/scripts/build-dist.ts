@@ -34,7 +34,12 @@ import {
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 
-type Target = "darwin-arm64" | "darwin-x64" | "linux-x64" | "linux-arm64" | "win32-x64";
+type Target =
+	| "darwin-arm64"
+	| "darwin-x64"
+	| "linux-x64"
+	| "linux-arm64"
+	| "win32-x64";
 
 const VALID_TARGETS: Target[] = [
 	"darwin-arm64",
@@ -206,13 +211,21 @@ async function downloadAndExtractNode(
 	if (!existsSync(extractedPath)) {
 		console.log(`[build-dist] extracting Node.js for ${target}`);
 		if (isWindows) {
-			await exec("powershell", ["-NoProfile", "-Command", `Expand-Archive -Path '${archivePath}' -DestinationPath '${cacheDir}' -Force`]);
+			await exec("powershell", [
+				"-NoProfile",
+				"-Command",
+				`Expand-Archive -Path '${archivePath}' -DestinationPath '${cacheDir}' -Force`,
+			]);
 		} else {
 			await exec("tar", ["-xzf", archivePath, "-C", cacheDir]);
 		}
 	}
 
-	const sourceBinary = join(extractedPath, isWindows ? "" : "bin", isWindows ? "node.exe" : "node");
+	const sourceBinary = join(
+		extractedPath,
+		isWindows ? "" : "bin",
+		isWindows ? "node.exe" : "node",
+	);
 	const destBinary = join(destDir, isWindows ? "node.exe" : "node");
 	cpSync(sourceBinary, destBinary);
 	if (!isWindows) {
@@ -501,10 +514,18 @@ async function main(): Promise<void> {
 	writeHostWrapper(join(stagingRoot, "bin"), target.startsWith("win32"));
 
 	const isWindows = target.startsWith("win32");
-	const tarball = join(cliDir, "dist", `superset-${target}.${isWindows ? 'zip' : 'tar.gz'}`);
+	const tarball = join(
+		cliDir,
+		"dist",
+		`superset-${target}.${isWindows ? "zip" : "tar.gz"}`,
+	);
 	console.log(`[build-dist] creating ${tarball}`);
 	if (isWindows) {
-		await exec("powershell", ["-NoProfile", "-Command", `Compress-Archive -Path '${stagingRoot}\\*' -DestinationPath '${tarball}' -Force`]);
+		await exec("powershell", [
+			"-NoProfile",
+			"-Command",
+			`Compress-Archive -Path '${stagingRoot}\\*' -DestinationPath '${tarball}' -Force`,
+		]);
 	} else {
 		// Tar from inside the staging dir so contents extract directly to the
 		// install target (no top-level superset-<target>/ wrapper).

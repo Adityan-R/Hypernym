@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
@@ -17,7 +18,6 @@ import {
 	htmlEnvTransformPlugin,
 } from "./vite/helpers";
 
-import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 // override: true ensures .env values take precedence over inherited env vars
@@ -124,7 +124,9 @@ export default defineConfig({
 				external: [
 					"electron",
 					...mainExternalizedDependencies,
-					...mainExternalizedDependencies.map((dep) => new RegExp(`^${dep}(/.*)?$`)),
+					...mainExternalizedDependencies.map(
+						(dep) => new RegExp(`^${dep}(/.*)?$`),
+					),
 				],
 				plugins: [sentryPlugin].filter(Boolean),
 			},
@@ -253,12 +255,27 @@ export default defineConfig({
 		resolve: {
 			alias: [
 				{ find: "@", replacement: resolve("src/renderer") },
-				{ find: "highlight.js/lib/languages/c-like", replacement: "highlight.js/lib/languages/c" },
-				{ find: "highlight.js/lib/languages/htmlbars", replacement: "highlight.js/lib/languages/xml" },
-				{ find: "highlight.js/lib/languages/sql_more", replacement: "highlight.js/lib/languages/sql" },
+				{
+					find: "highlight.js/lib/languages/c-like",
+					replacement: "highlight.js/lib/languages/c",
+				},
+				{
+					find: "highlight.js/lib/languages/htmlbars",
+					replacement: "highlight.js/lib/languages/xml",
+				},
+				{
+					find: "highlight.js/lib/languages/sql_more",
+					replacement: "highlight.js/lib/languages/sql",
+				},
 				{ find: "lowlight-actual", replacement: require.resolve("lowlight") },
-				{ find: "lowlight/lib/core", replacement: resolve("src/renderer/lowlight-stub.js") },
-				{ find: /^lowlight$/, replacement: resolve("src/renderer/lowlight-stub.js") }
+				{
+					find: "lowlight/lib/core",
+					replacement: resolve("src/renderer/lowlight-stub.js"),
+				},
+				{
+					find: /^lowlight$/,
+					replacement: resolve("src/renderer/lowlight-stub.js"),
+				},
 			],
 		},
 
