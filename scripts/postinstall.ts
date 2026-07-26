@@ -21,5 +21,9 @@ if (process.env.CI) {
 // Install native dependencies for desktop app
 const desktopRes = spawnSync('bun', ['run', '--filter=@superset/desktop', 'install:deps'], { stdio: 'inherit', env: process.env, shell: true });
 if (desktopRes.status !== 0) {
-  process.exit(desktopRes.status || 1);
+  console.warn('⚠️ electron-builder install-app-deps failed. Falling back to copy:native-modules...');
+  const copyRes = spawnSync('bun', ['run', '--filter=@superset/desktop', 'copy:native-modules'], { stdio: 'inherit', env: process.env, shell: true });
+  if (copyRes.status !== 0) {
+    console.warn('⚠️ copy:native-modules failed or skipped.');
+  }
 }

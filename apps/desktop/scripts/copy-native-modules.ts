@@ -23,6 +23,7 @@ import {
 	readFileSync,
 	realpathSync,
 	rmSync,
+	unlinkSync,
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { satisfies } from "semver";
@@ -98,10 +99,23 @@ function copyModuleIfSymlink(
 		console.log(`    Real path: ${realPath}`);
 
 		// Remove the symlink
-		rmSync(modulePath);
+		try {
+			unlinkSync(modulePath);
+		} catch {
+			rmSync(modulePath, { recursive: true, force: true });
+		}
 
 		// Copy the actual files
-		cpSync(realPath, modulePath, { recursive: true });
+		cpSync(realPath, modulePath, {
+			recursive: true,
+			filter: (src) => {
+				const relative = src.slice(realPath.length);
+				return (
+					!relative.includes("/node_modules") &&
+					!relative.includes("\\node_modules")
+				);
+			},
+		});
 
 		console.log(`    Copied to: ${modulePath}`);
 	} else {
@@ -203,7 +217,11 @@ function copyDependencyForPackage(
 		const nestedStats = lstatSync(nestedDependencyPath);
 		if (nestedStats.isSymbolicLink()) {
 			const realPath = realpathSync(nestedDependencyPath);
-			rmSync(nestedDependencyPath);
+			try {
+				unlinkSync(nestedDependencyPath);
+			} catch {
+				rmSync(nestedDependencyPath, { recursive: true, force: true });
+			}
 			cpSync(realPath, nestedDependencyPath, {
 				recursive: true,
 			});
