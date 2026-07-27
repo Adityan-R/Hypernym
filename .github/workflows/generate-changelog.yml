@@ -51,7 +51,7 @@ jobs:
         run: |
           claude -p "$(cat .github/prompts/generate-changelog.md)" \
             --model sonnet \
-            --allowedTools "Bash(git*)" "Bash(gh*)" "Bash(date*)" "Bash(ls*)" "Read" "Write" "Edit" "Glob" "Grep"
+            --tools "Bash" "Read" "Write" "Edit" "Glob" "Grep"
 
       - name: Check for changes
         id: check-changes
